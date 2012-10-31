@@ -18,7 +18,7 @@ class BrowserTest(unittest.TestCase):
 	def test_go_to_jira(self):
 		self.browser.go()
 		self.assertIn('JIRA', self.browser.title())
-	'''
+	
 	def test_log_into_jira(self):
 		self.browser.go()
 		self.browser.log_into_jira()
@@ -28,13 +28,17 @@ class BrowserTest(unittest.TestCase):
 
 
 	def test_navigate_to_Delta_Iphone(self):
-		self.test_log_into_jira()
+		self.browser.go()
+		self.browser.log_into_jira()
 		self.browser.select_delta_iphone_dashboard()
 		self.assertIn('Iphone', self.browser.title())
-
+	'''
 
 	def test_to_download_xsls_files(self):
-		self.test_navigate_to_Delta_Iphone()
+		self.browser.go()
+		self.browser.log_into_jira()
+		self.browser.wait().until(lambda x: x.find_element_by_link_text('Farhan Syed'))
+		self.browser.select_delta_iphone_dashboard()
 		self.browser.download_xsls_files()
 		###self.assert #Some directory to check stuff #
 

@@ -2,8 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import ui
 from selenium.webdriver import ActionChains
-import re
-import datetime
+import re, datetime, time
 
 
 ################
@@ -69,14 +68,16 @@ class Browser(object):
 
 
 	def download_xsls_files(self):
+		'''collect all filters'''
 
+		self.webdriver.switch_to_frame('gadget-16534')
 		for specific_filter in self.bussiness_filters:
-
-			self.webdriver.switch_to_frame('gadget-16534')
-			found_element = [x for x in self.webdriver.find_elements_by_tag_name('a') if re.match(specific_filter, x.text)][0]
-			found_element.click()
-			#self.wait().until(lambda x: x.find_element_by_link_text(specific_filter))
-			#self.webdriver.find_element_by_link_text(specific_filter).click()
+			
+			time.sleep(2)
+			found_elements = [x for x in self.webdriver.find_elements_by_tag_name('a') if re.match(specific_filter, x.text)]
+			specific_element = found_elements[0]
+			specific_element.click()
+			print 'working now'
 			self.webdriver.find_element_by_id('viewOptions').click()
 			self.webdriver.find_element_by_link_text('Excel (Current fields)').click()
 
