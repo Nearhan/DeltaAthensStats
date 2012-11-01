@@ -25,6 +25,10 @@ class Processor(object):
 			setattr(self, key, value)
 
 
+	def make_call_to_apple_script(self):
+		pass
+		
+
 	def gather_all_files_and_split(self):
 
 		self.all_xslx
@@ -45,7 +49,5 @@ class Processor(object):
 				self.business_xslx.append(xsls)
 			else:
 				self.regular_xslx.append(xslx)
-
-				
 
 
