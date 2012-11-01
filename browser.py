@@ -12,15 +12,15 @@ import re, datetime, time, os
 settings = { 'url': 'https://jira.akqa.net',
 			'username' : 'Farhan.Syed',
 			'password' : 'Red19378246!',
-			'date' : datetime.date.today().isoformat(),
+			'download_directory' : '',
 			'bussiness_filters' : ['As Designed Bugs Business', 'CANCELLED ISSUES Bussiness', 'CLOSED ISSUES ! Business', 
-									'FIXED ISSUES Business', 'NEW ISSUES Business', 'Reopened Issues business', 
+									'FIXED ISSUES Business', 'NEW ISSUES Business', 'Reopened Issues Business', 
 									'UNREPRODUCEABLE ISSUES Business'],
 			'regular_filters': ['Closed Issues', 'Closed QC Defects', 'Open bugs', 'Open QC defects', 'Resolved Issues', 'Resolved QC defects'],
 			'http_elements' : {
 				'username' : 'login-form-username',
 				'password' : 'login-form-password',
-				'login_frame ' : 'gadget-0',
+				'login_frame' : 'gadget-0',
 				'filters_frame' : 'gadget-16534',
 				}, 
 			}
@@ -38,19 +38,23 @@ class Browser(object):
 
 	def create_profile(self):
 		profile = webdriver.FirefoxProfile()
-		profile.set_preference('browser.download.dir', os.getcwd())
+		profile.set_preference('browser.download.dir', self.download_dir)
 		profile.set_preference('browser.download.folderList',2)
 		profile.set_preference('browser.helperApps.neverAsk.saveToDisk',"application/vnd.ms-excel")
 		return profile
 
+
 	def close(self):
 		self.webdriver.close()
+
 
 	def go(self):	
 		self.webdriver.get(self.url)
 
+
 	def title(self):
 		return self.webdriver.title
+
 
 	def log_into_jira(self):
 		self.webdriver.switch_to_frame(self.http_elements['login_frame'])
@@ -78,12 +82,24 @@ class Browser(object):
 		for key, value in settings.iteritems():
 			setattr(self, key, value)
 
+		self.download_dir = self.make_download_directory()
+
+
+	def make_download_directory(self):
+		try :
+			os.mkdir(os.path.join(os.getcwd()+'/reports', datetime.date.today().isoformat()))
+
+		except OSError:
+			print 'directory exsist'
+
+		return os.path.join(os.getcwd()+'/reports', datetime.date.today().isoformat())
+
 
 	def download_xsls_files(self):
 		'''collect all filters'''
 		all_filters = self.bussiness_filters + self.regular_filters
 		for specific_filter in all_filters:
-			time.sleep(3)
+			time.sleep(5)
 			self.webdriver.switch_to_frame(self.http_elements['filters_frame'])
 
 			try:
