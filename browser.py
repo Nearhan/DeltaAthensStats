@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import ui
 from selenium.webdriver import ActionChains
-import re, datetime, time
+import re, datetime, time, os
 
 
 ################
@@ -13,8 +13,10 @@ settings = { 'url': 'https://jira.akqa.net',
 			'username' : 'Farhan.Syed',
 			'password' : 'Red19378246!',
 			'date' : datetime.date.today().isoformat(),
-			'bussiness_filters' : ['As Designed Bugs Business',],
-			'regular_filters': [],
+			'bussiness_filters' : ['As Designed Bugs Business', 'CANCELLED ISSUES Bussiness', 'CLOSED ISSUES ! Business', 
+									'FIXED ISSUES Business', 'NEW ISSUES Business', 'Reopened Issues business', 
+									'UNREPRODUCEABLE ISSUES Business'],
+			'regular_filters': ['Closed Issues', 'Closed QC Defects', 'Open bugs', 'Open QC defects', 'Resolved Issues', 'Resolved QC defects'],
 			'http_elements' : {
 				'username' : 'login-form-username',
 				'password' : 'login-form-password',
@@ -28,9 +30,16 @@ class Browser(object):
 	global settings
 
 	def __init__(self):
-		self.webdriver = webdriver.Firefox()
 		self.configure(settings)
+		profile = self.create_profile()
+		self.webdriver = webdriver.Firefox(profile)
 
+	def create_profile(self):
+		profile = webdriver.FirefoxProfile()
+		profile.set_preference('browser.download.dir', os.getcwd())
+		profile.set_preference('browser.download.folderList',2)
+		profile.set_preference('browser.helperApps.neverAsk.saveToDisk',"application/vnd.ms-excel")
+		return profile
 
 	def close(self):
 		self.webdriver.close()
@@ -52,6 +61,7 @@ class Browser(object):
 
 	def select_delta_iphone_dashboard(self):
 		home_link_drop = self.webdriver.find_element_by_id('home_link_drop')
+		print home_link_drop
 		home_link_drop.click()
 		delta_iphone_dashboard = self.webdriver.find_element_by_link_text('Delta Iphone')
 		delta_iphone_dashboard.click()
@@ -69,19 +79,17 @@ class Browser(object):
 
 	def download_xsls_files(self):
 		'''collect all filters'''
-
-		self.webdriver.switch_to_frame('gadget-16534')
-		for specific_filter in self.bussiness_filters:
+		all_filters = self.bussiness_filters + self.regular_filters
+		for specific_filter in all_filters:
 			time.sleep(3)
+			self.webdriver.switch_to_frame('gadget-16534')
 			found_elements = [x for x in self.webdriver.find_elements_by_tag_name('a') if re.match(specific_filter, x.text)]
 			specific_element = found_elements[0]
 			specific_element.click()
-
-			specific_element.find_element_by_id('viewOptions').click()
-			specific.element.find_element_by_link_text('Excel (Current fields)').click()
-			#self.webdriver.find_element_by_id('viewOptions').click()
-			#self.webdriver.find_element_by_link_text('Excel (Current fields)').click()
-
+			self.webdriver.find_element_by_id('viewOptions').click()
+			self.webdriver.find_element_by_link_text('Excel (Current fields)').click()
+			self.webdriver.back()
+		
 
 
 
