@@ -20,6 +20,8 @@ settings = { 'url': 'https://jira.akqa.net',
 			'http_elements' : {
 				'username' : 'login-form-username',
 				'password' : 'login-form-password',
+				'login_frame ' : 'gadget-0',
+				'filters_frame' : 'gadget-16534',
 				}, 
 			}
 
@@ -51,7 +53,7 @@ class Browser(object):
 		return self.webdriver.title
 
 	def log_into_jira(self):
-		self.webdriver.switch_to_frame('gadget-0')
+		self.webdriver.switch_to_frame(self.http_elements['login_frame'])
 		login = self.webdriver.find_element_by_id(self.http_elements['username'])
 		login.send_keys(self.username)
 		password = self.webdriver.find_element_by_id(self.http_elements['password'])
@@ -82,13 +84,23 @@ class Browser(object):
 		all_filters = self.bussiness_filters + self.regular_filters
 		for specific_filter in all_filters:
 			time.sleep(3)
-			self.webdriver.switch_to_frame('gadget-16534')
-			found_elements = [x for x in self.webdriver.find_elements_by_tag_name('a') if re.match(specific_filter, x.text)]
-			specific_element = found_elements[0]
+			self.webdriver.switch_to_frame(self.http_elements['filters_frame'])
+
+			try:
+				found_elements = [x for x in self.webdriver.find_elements_by_tag_name('a') if re.match(specific_filter, x.text)]
+				specific_element = found_elements[0]
+
+			except IndexError:
+
+				print 'Trying again'
+				found_elements = [x for x in self.webdriver.find_elements_by_tag_name('a') if re.match(specific_filter, x.text)]
+				specific_element = found_elements[0]
+
 			specific_element.click()
 			self.webdriver.find_element_by_id('viewOptions').click()
 			self.webdriver.find_element_by_link_text('Excel (Current fields)').click()
 			self.webdriver.back()
+			time.sleep(3)
 		
 
 
