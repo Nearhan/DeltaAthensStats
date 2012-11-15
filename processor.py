@@ -7,8 +7,9 @@ import os, datetime, re, openpyxl
 #############
 
 settings = { 'current_directory' : os.path.join(os.getcwd()+'/reports', datetime.date.today().isoformat()),
+'date' : datetime.date.strftime(datetime.date.today(), '%D').replace('/', '-'),
 
-	}
+}
 
 
 class Processor(object):
@@ -86,7 +87,22 @@ class Processor(object):
 		for xlsx in self.business_xlsx:
 			wb = openpyxl.load_workbook(xlsx)
 			ws = wb.get_active_sheet()
-			ws.title = xlsx[62:75]
+
+			if re.search(r'NEW', xlsx):
+				ws.title = 'New'
+			elif re.search(r'Reopened', xlsx):
+				ws.title = 'Reopened'
+			elif re.search(r'As', xlsx):
+				ws.title = 'As Designed'
+			elif re.search(r'FIXED', xlsx):
+				ws.title = 'Fixed'
+			elif re.search(r'CANCELLED',xlsx):
+				ws.title = 'Cancelled'
+			elif re.search(r'CLOSED', xlsx):
+				ws.title = 'Closed'
+			elif re.search(r'UNR', xlsx):
+				ws.title = 'Unreproducable'
+
 			workbook.add_sheet(ws)
 
 		self.business_workbook = workbook
@@ -99,7 +115,22 @@ class Processor(object):
 		for xlsx in self.regular_xlsx:
 			wb = openpyxl.load_workbook(xlsx)
 			ws = wb.get_active_sheet()
-			ws.title = xlsx[62:75]
+
+			if re.search(r'Open\+bugs',xlsx):
+				ws.title = 'Open'
+			elif re.search(r'Resolved\+I', xlsx):
+				ws.title = 'Resolved'
+			elif re.search(r'Closed\+I', xlsx):
+				ws.title = 'Closed'
+			elif re.search(r'Open\+QC', xlsx):
+				ws.title = 'Open QC'
+			elif re.search(r'CANCELLED', xlsx):
+				ws.title = 'Cancelled'
+			elif re.search(r'Resolved\+QC', xlsx):
+				ws.title = 'Resolved QC'
+			elif re.search(r'Closed\+QC', xlsx):
+				ws.title = 'Closed QC'
+
 			workbook.add_sheet(ws)
 		
 		self.regular_workbook = workbook
@@ -114,21 +145,5 @@ class Processor(object):
 
 
 	def save_all_workbooks(self):
-		self.business_workbook.save(os.path.join(self.current_directory, 'business_workbook'+datetime.date.today().isoformat())+'.xlsx')
-		self.regular_workbook.save(os.path.join(self.current_directory, 'regular_workbook'+datetime.date.today().isoformat())+'.xlsx')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		self.business_workbook.save(os.path.join(self.current_directory, 'Delta_Athens_'+settings['date']+'_leadership.xlsx'))
+		self.regular_workbook.save(os.path.join(self.current_directory, 'Delta_Athens_'+settings['date']+'.xlsx'))

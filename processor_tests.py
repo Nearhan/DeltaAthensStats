@@ -53,7 +53,7 @@ class ProcessorTests(unittest.TestCase):
 
 	def test_to_save_workbooks(self):
 		self.processor.gather_all_files_and_split()
-		self.processor.sort_files()
+		self.processor.sort_all_files()
 		self.processor.create_both_workbooks()
 
 
