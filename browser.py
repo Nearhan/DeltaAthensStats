@@ -10,8 +10,8 @@ import re, datetime, time, os
 ################
 
 settings = { 'url': 'https://jira.akqa.net',
-			'username' : 'Farhan.Syed',
-			'password' : 'Red19378246!',
+			'username' : '',
+			'password' : '',
 			'download_directory' : '',
 			'bussiness_filters' : ['As Designed Bugs Business', 'CANCELLED ISSUES Bussiness', 'CLOSED ISSUES ! Business', 
 									'FIXED ISSUES Business', 'NEW ISSUES Business', 'Reopened Issues Business', 
